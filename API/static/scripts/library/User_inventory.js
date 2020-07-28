@@ -1,13 +1,13 @@
 class User_inventoryLib {
 
     static getReqAttrAndTypes(){
-        return {"item_id": "number", "user_id": "number", "id": "number"}
-    } 
+        return {"user_id": "number"}
+    }
 
 
-    static async create(id,user_id,item_id) {
+    static async create(user_id) {
         // verify parameters and create data to send to the route
-        const arrayOfAttributes = 'id,user_id,item_id'.split(',');
+        const arrayOfAttributes = 'user_id'.split(',');
         let routeGroupObj = {};
         for (let i = 0; i < arguments.length; i++) {
             if (
@@ -19,8 +19,7 @@ class User_inventoryLib {
             routeGroupObj[arrayOfAttributes[i]] = arguments[i];
         }
         // Create and set id property to 0, currently required for the route
-        routeGroupObj.id = '0';
-        routeGroupObj.appToken = "a3c4bc3e-f4d4-47e9-89f0-ef6e670e66bb";
+        routeGroupObj.appToken = "7e8aae63-e40b-45fc-83b0-77305b8f2b43";
 
         // request to server
         let resStream = await fetch(`/createUser_inventory`, {
@@ -42,18 +41,16 @@ class User_inventoryLib {
     }
 
 
-    static async read(id, attributes_dict){
+    static async read(attributes_dict){
         for (const [attr_name, attr_val] of Object.entries(attributes_dict)) {
             if (typeof attr_val !== User_inventoryLib.getReqAttrAndTypes()[attr_name]) {
                 throw "Bad Params! [Attribute Type Error]";
             }
         }
-        attributes_dict["id"] = id;
-        attributes_dict.appToken = "a3c4bc3e-f4d4-47e9-89f0-ef6e670e66bb";
         let result_stream = await fetch(`/readUser_inventory`, {
             method: 'POST',
             headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(attributes_dict)
+            body: JSON.stringify("appToken":"7e8aae63-e40b-45fc-83b0-77305b8f2b43", "filters":attributes_dict)
         })
         .catch((err) => {
             console.log('Error: ', err);
@@ -70,19 +67,21 @@ class User_inventoryLib {
 
     static async update(id, attributes_dict) {
         for (const [attr_name, attr_val] of Object.entries(attributes_dict)) {
-            if(!User_inventoryLib.getReqAttrAndTypes()[attr_name]) 
+            if(!User_inventoryLib.getReqAttrAndTypes()[attr_name])
                 throw `${attr_name} is not an attribute of User_inventory`;
 
             if (typeof attr_val !== User_inventoryLib.getReqAttrAndTypes()[attr_name]) {
                 throw `[Attribute Type Error] ${attr_name} expected ${User_inventoryLib.getReqAttrAndTypes()[attr_name]}, but received ${typeof attr_val}`;
             }
         }
-        attributes_dict["id"] = id;
-        attributes_dict.appToken = "a3c4bc3e-f4d4-47e9-89f0-ef6e670e66bb";
+        const updateAttributes = {};
+        updateAttributes["id"] = id;
+        updateAttributes["data"] = attributes_dict
+        attributes_dict.appToken = "7e8aae63-e40b-45fc-83b0-77305b8f2b43";
         let result_stream = await fetch(`/updateUser_inventory`, {
             method: 'POST',
             headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(attributes_dict)
+            body: JSON.stringify(updateAttributes)
         })
         .catch((err) => {
             console.log('Error: ', err);
@@ -100,7 +99,7 @@ class User_inventoryLib {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({id, appToken:"a3c4bc3e-f4d4-47e9-89f0-ef6e670e66bb"})
+            body: JSON.stringify({id, appToken:"7e8aae63-e40b-45fc-83b0-77305b8f2b43"})
         })
         .catch((err) => {
             console.log('Error: ', err);
